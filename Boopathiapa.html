@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Data Entry Form</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f3f4f7, #e3e7ef);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px 30px;
+            max-width: 500px;
+            width: 100%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        input:focus {
+            border-color: #007BFF;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+        }
+        button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Data Entry Form</h2>
+        <form id="dataForm">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" required>
+
+            <label for="loadIn">Load In:</label>
+            <input type="text" id="loadIn" name="loadIn" required>
+
+            <label for="loadOut">Load Out:</label>
+            <input type="text" id="loadOut" name="loadOut" required>
+
+            <label for="material">Material:</label>
+            <input type="text" id="material" name="material" required>
+
+            <label for="unit">Unit:</label>
+            <input type="text" id="unit" name="unit" required>
+
+            <label for="party">Party:</label>
+            <input type="text" id="party" name="party" required>
+
+            <label for="amount">Amount:</label>
+            <input type="number" id="amount" name="amount" required>
+
+            <div class="button-container">
+                <button type="button" onclick="saveResponse()">Submit</button>
+                <button type="button" onclick="downloadExcel()">Download Excel</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let responses = [];
+
+        function saveResponse() {
+            // Get form data
+            const form = document.getElementById('dataForm');
+            const formData = new FormData(form);
+
+            // Add the current form data to the responses array
+            const response = {
+                date: formData.get('date'),
+                loadIn: formData.get('loadIn'),
+                loadOut: formData.get('loadOut'),
+                material: formData.get('material'),
+                unit: formData.get('unit'),
+                party: formData.get('party'),
+                amount: formData.get('amount')
+            };
+            responses.push(response);
+
+            alert('Response saved successfully!');
+            form.reset();
+        }
+
+        function downloadExcel() {
+            // Convert responses to a 2D array
+            const headers = ["Date", "Load In", "Load Out", "Material", "Unit", "Party", "Amount"];
+            const data = responses.map(r => [r.date, r.loadIn, r.loadOut, r.material, r.unit, r.party, r.amount]);
+
+            // Add headers to the data
+            const worksheetData = [headers, ...data];
+
+            // Create a worksheet and workbook
+            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Responses");
+
+            // Export to Excel file
+            XLSX.writeFile(workbook, "FormData.xlsx");
+        }
+    </script>
+</body>
+</html>
